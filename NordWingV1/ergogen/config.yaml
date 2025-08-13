@@ -1,0 +1,635 @@
+meta:
+  engine: 4.1.0
+units:
+  kx: U # MX Spacing
+  ky: U # MX Spacing
+  px: kx + 2
+  py: ky + 2
+  # Double Padding
+  dx: kx + 7
+  dy: ky + 7
+  kx_plate: 14
+  ky_plate: 14
+
+  # M2 Screw Inserts
+  screwSize: 1.5 #3mm Insert
+  standoffSize: 2.5 #5mm 
+  standoffBuffer: 2
+  standoffHeight: 4
+
+  mcuHeight: 1 
+  mcuHotswapHeight: 4
+  plateHeight: 1.5 
+  pcbHeight: 1.5
+
+  baseHeight: 1.5
+
+  wallHeight: baseHeight + standoffHeight + standoffBuffer +  plateHeight + pcbHeight
+  
+points:
+  zones:
+    matrix:
+      mirror: &mirror
+        ref: matrix_right2_num
+        distance: -300
+      anchor: 
+        shift: [250, -200]
+      key:
+        padding: 1py
+        spread: 1px
+      columns:
+        inner:
+          key:
+            column_net: "GP6"
+          rows:
+            thumb.skip: true
+        index:
+          key:
+            column_net: "GP7"
+            stagger: 5
+          rows:
+            thumb.skip: true
+        middle:
+          key:
+            column_net: "GP8"
+            stagger: 7
+          rows:
+            thumb.skip: true
+        ring:
+          key:
+            column_net: "GP9"
+            stagger: -7
+        pinky:
+          key:
+            column_net: "GP10"
+            stagger: -5
+        right: 
+          key:
+            column_net: "GP11"
+        right2: 
+          key:
+            # Remove left column
+            mirror.skip: true
+            column_net: "GP12"
+      rows:
+        thumb:
+          row_net: "GP16"
+        bottom:
+          row_net: "GP17"
+        home:
+          row_net: "GP18"
+        top:
+          row_net: "GP19"
+        num:
+          row_net: "GP20"
+    thumb:
+      key:
+        padding: 1py
+        spread: 1px
+      anchor:
+        ref: matrix_index_bottom
+        shift: [-1.1U, -1.6U]
+        rotate: 15
+      columns:
+        back_space:
+          key:
+            row_net: "GP16"
+            column_net: "GP6"
+            name: matrix_back_space
+        enter:
+          key:
+            row_net: "GP16"
+            column_net: "GP7"
+            width: 2U
+            name: matrix_enter
+            spread: 0.5U + px
+      mirror: &mirror
+        ref: matrix_right2_num
+        distance: -300
+outlines:
+  _raw_right:
+    - where: /^matrix_.*/
+      what: rectangle
+      size: [dx, dy]
+      fillet: 2
+  _raw_right_xl:
+    - where: /^matrix_.*/
+      what: rectangle
+      size: [dx+4, dy+4]
+      fillet: 2
+    - what: rectangle
+      where: matrix_middle_bottom
+      size: [3px +4, py +4]
+      adjust:
+        shift: [0, -1px]
+    - what: rectangle
+      where: matrix_enter
+      size: [2dx +4, dy +4]
+      fillet: 2
+  _fill_right:
+    - what: rectangle
+      where: matrix_middle_bottom
+      size: [4px, 1py]
+      adjust:
+        shift: [0, -1px]
+    - what: rectangle
+      where: matrix_enter
+      size: [2dx, dy]
+      fillet: 2
+  _raw_left:
+    - where: /^mirror_.*/
+      what: rectangle
+      size: [dx, dy]
+      fillet: 2
+  _raw_left_xl:
+    - where: /^mirror_.*/
+      what: rectangle
+      size: [dx+4, dy+4]
+      fillet: 2
+    - what: rectangle
+      where: mirror_matrix_middle_bottom
+      size: [3px +4, py +4]
+      adjust:
+        shift: [0, -1px]
+    - what: rectangle
+      where: mirror_matrix_enter
+      size: [2dx +4, dy +4]
+      fillet: 2
+  _fill_left:
+    - what: rectangle
+      where: mirror_matrix_middle_bottom
+      size: [3px, py]
+      adjust:
+        shift: [0, -1px]
+    - what: rectangle
+      where: mirror_matrix_enter
+      size: [2dx, dy]
+      fillet: 2
+  right_board:
+    - name: _raw_right
+    - operation: add
+      name: _fill_right
+  left_board:
+    - name: _raw_left
+    - operation: add
+      name: _fill_left
+  keys:
+    - what: rectangle
+      where: true
+      size: [kx_plate,ky_plate]
+  combo:
+    - name: right_board
+    - operation: add
+      name: left_board
+    - operation: subtract
+      name: keys
+  # Right
+  _rightMounting:
+  - what: circle
+    radius: screwSize
+    where:
+      ref: matrix_inner_bottom
+      shift: [0.5px, -0.5py]
+  - what: circle
+    radius: screwSize
+    where:
+      ref: matrix_right2_thumb
+      shift: [-0.5px, 0.5py]
+  - what: circle
+    radius: screwSize
+    where:
+      ref: matrix_right2_num
+      shift: [-0.5px, -0.5py]
+  - what: circle
+    radius: screwSize
+    where:
+      ref: matrix_index_num
+      shift: [0.5px, -0.5py]
+  - what: circle
+    radius: screwSize
+    where:
+      ref: matrix_ring_home
+      shift: [-0.5px, -0.5py]
+  _rightStandoff:
+  - what: circle
+    radius: standoffSize
+    where:
+      ref: matrix_inner_bottom
+      shift: [0.5px, -0.5py]
+  - what: circle
+    radius: standoffSize
+    where:
+      ref: matrix_right2_thumb
+      shift: [-0.5px, 0.5py]
+  - what: circle
+    radius: standoffSize
+    where:
+      ref: matrix_right2_num
+      shift: [-0.5px, -0.5py]
+  - what: circle
+    radius: standoffSize
+    where:
+      ref: matrix_index_num
+      shift: [0.5px, -0.5py]
+  - what: circle
+    radius: standoffSize
+    where:
+      ref: matrix_ring_home
+      shift: [-0.5px, -0.5py]
+  right_plate:
+    - name: right_board
+    - operation: subtract
+      name: _rightMounting
+    - operation: subtract
+      name: keys
+  # Left
+  _leftMounting:
+  - what: circle
+    radius: screwSize
+    where:
+      ref: mirror_matrix_inner_bottom
+      shift: [0.5px, -0.5py]
+  - what: circle
+    radius: screwSize
+    where:
+      ref: mirror_matrix_right_thumb
+      shift: [-0.5px, 0.5py]
+  - what: circle
+    radius: screwSize
+    where:
+      ref: mirror_matrix_right_num
+      shift: [-0.5px, -0.5py]
+  - what: circle
+    radius: screwSize
+    where:
+      ref: mirror_matrix_index_num
+      shift: [0.5px, -0.5py]
+  - what: circle
+    radius: screwSize
+    where:
+      ref: mirror_matrix_ring_home
+      shift: [-0.5px, -0.5py]
+  _leftStandoff:
+  - what: circle
+    radius: standoffSize
+    where:
+      ref: mirror_matrix_inner_bottom
+      shift: [0.5px, -0.5py]
+  - what: circle
+    radius: standoffSize
+    where:
+      ref: mirror_matrix_right_thumb
+      shift: [-0.5px, 0.5py]
+  - what: circle
+    radius: standoffSize
+    where:
+      ref: mirror_matrix_right_num
+      shift: [-0.5px, -0.5py]
+  - what: circle
+    radius: standoffSize
+    where:
+      ref: mirror_matrix_index_num
+      shift: [0.5px, -0.5py]
+  - what: circle
+    radius: standoffSize
+    where:
+      ref: mirror_matrix_ring_home
+      shift: [-0.5px, -0.5py]
+  left_plate:
+    - name: left_board
+    - operation: subtract
+      name: _leftMounting
+    - operation: subtract
+      name: keys
+cases:
+  # right
+  _right_board: # unused right now
+    - name: right_board
+      extrude: 1.5
+  _right_plate:
+    - name: right_plate
+      extrude: plateHeight
+  _rightXlBottom:
+    - name: _raw_right_xl
+      extrude: 1
+  _rightOuterWall:
+    - name: _raw_right_xl
+      extrude: wallHeight
+  _rightInnerWall:
+    - name: right_board
+      extrude: wallHeight
+  _rightRaisedBottom:
+    - name: right_board
+      extrude: baseHeight
+  _rightWall:
+    - what: case
+      name: _rightOuterWall
+      operation: add
+    - what: case
+      name: _rightInnerWall
+      operation: subtract
+  _rightHoles:
+    - name: _rightMounting
+      extrude: baseHeight + standoffHeight + standoffBuffer
+  _rightStandoffs:
+    - name: _rightStandoff
+      extrude: baseHeight + standoffHeight + standoffBuffer
+  rightBottom:
+    - what: case
+      name: _rightXlBottom
+    - what: case
+      name: _rightStandoffs
+      operation: add
+    - what: case
+      name: _rightHoles
+      operation: subtract
+    - what: case
+      name: _rightRaisedBottom
+      operation: add
+  rightPlate_MIRRORED:
+    - what: case
+      name: _rightWall
+    - what: case
+      operation: add
+      name: _right_plate
+  #left
+  _left_board: # unused right now
+    - name: left_board
+      extrude: 1.5
+  _left_plate:
+    - name: left_plate
+      extrude: plateHeight
+  _leftXlBottom:
+    - name: _raw_left_xl
+      extrude: 1
+  _leftOuterWall:
+    - name: _raw_left_xl
+      extrude: wallHeight
+  _leftInnerWall:
+    - name: left_board
+      extrude: wallHeight
+  _leftRaisedBottom:
+    - name: left_board
+      extrude: baseHeight
+  _leftWall:
+    - what: case
+      name: _leftOuterWall
+      operation: add
+    - what: case
+      name: _leftInnerWall
+      operation: subtract
+  _leftHoles:
+    - name: _leftMounting
+      extrude: baseHeight + standoffHeight + standoffBuffer
+  _leftStandoffs:
+    - name: _leftStandoff
+      extrude: baseHeight + standoffHeight + standoffBuffer
+  leftBottom:
+    - what: case
+      name: _leftXlBottom
+    - what: case
+      name: _leftStandoffs
+      operation: add
+    - what: case
+      name: _leftHoles
+      operation: subtract
+    - what: case
+      name: _leftRaisedBottom
+      operation: add
+  leftPlate_MIRRORED:
+    - what: case
+      name: _left_plate
+    - what: case
+      name: _leftWall
+      operation: add
+
+
+pcbs:
+  right:
+    outlines:
+      main:
+        outline: right_board
+    footprints:
+      # Main switches
+      main_mx_hotswap:
+        what: mx
+        where: /^matrix_(?!(?:inner_num|inner_top)).*/
+        params:
+          keycaps: true
+          reverse: false
+          hotswap: true
+          from: "{{column_net}}"
+          to: "{{colrow}}"
+        adjust:
+          rotate: 180
+      # Switches under MCU
+      under_mcu_mx_hotswap:
+        what: mx
+        where: /^matrix_(?:inner_num|inner_top)/
+        params:
+          keycaps: true
+          reverse: false
+          hotswap: true
+          from: "{{column_net}}"
+          to: "{{colrow}}"
+        adjust:
+          rotate: -90
+      # Main diodes excluding altered
+      main_diodes:
+        what: diode
+        where: /^matrix_(?!(?:inner_num|inner_top|inner_home|inner_bottom)).*/
+        params:
+          from: "{{colrow}}"
+          to: "{{row_net}}"
+        adjust:
+          shift: [0, 5]
+      # Weird Diodes
+      diode_mcu:
+        what: diode
+        where: /^matrix_(?:inner_num|inner_top)/
+        params:
+          from: "{{colrow}}"
+          to: "{{row_net}}"
+        adjust:
+          shift: [-5, 0]
+          rotate: 90
+      # More Weird Diodes
+      diode_mcu_under:
+        what: diode
+        where: matrix_inner_home
+        params:
+          from: "{{colrow}}"
+          to: "{{row_net}}"
+        adjust:
+          shift: [0, 8]
+      diode_mcu_trrs:
+        what: diode
+        where: matrix_inner_bottom
+        params:
+          from: "{{colrow}}"
+          to: "{{row_net}}"
+        adjust:
+          shift: [4.5, -7]
+      trrs:
+        what: trrs
+        params:
+          A: GP0 #UART0 TX
+          B: GP1 #UART0 RX
+          C: GND #GND
+          D: 3V3 #3V3 (OUT)
+          reverse: "true"
+          symmetric: "false"
+        where:
+          ref: matrix_inner_home
+          shift: [-11, -12]
+          rotate: 90
+#      mcu:
+#        what: pipico-no-debug
+#        params:
+#          mounted: "back"
+#          mountingType: "throughole"
+#         pinSilkscreen: false
+#        where:
+#          ref: matrix_inner_num
+#          shift: [0,-13]
+#          rotate: 0
+#      # Mounting holes
+#      hole_bottom_right:
+#        what: mountinghole
+#        where:
+#          ref: matrix_inner_bottom
+#          shift: [0.5px, -0.5py]
+#      hole_bottom_left:
+#        what: mountinghole
+#        where:
+#          ref: matrix_right2_thumb
+#          shift: [-0.5px, 0.5py]
+#      hole_top_left:
+#        what: mountinghole
+#        where:
+#          ref: matrix_right2_num
+#          shift: [-0.5px, -0.5py]
+#      hole_top_right:
+#        what: mountinghole
+#        where:
+#          ref: matrix_index_num
+#          shift: [0.5px, -0.5py]
+#      hole_center:
+#        what: mountinghole
+#        where:
+#          ref: matrix_ring_home
+#          shift: [-0.5px, -0.5py]
+  left:
+    outlines:
+      main:
+        outline: left_board
+    footprints:
+      # Main switches
+      main_mx_hotswap:
+        what: mx
+        where: /^mirror_matrix_(?!(?:inner_num|inner_top)).*/
+        params:
+          keycaps: true
+          reverse: false
+          hotswap: true
+          from: "{{column_net}}"
+          to: "{{colrow}}"
+        adjust:
+          rotate: 180
+      # Switches under MCU
+      under_mcu_mx_hotswap:
+        what: mx
+        where: /^mirror_matrix_(?:inner_num|inner_top)/
+        params:
+          keycaps: true
+          reverse: false
+          hotswap: true
+          from: "{{column_net}}"
+          to: "{{colrow}}"
+        adjust:
+          rotate: -90
+      # Main diodes excluding altered
+      main_diodes:
+        what: diode
+        where: /^mirror_matrix_(?!(?:inner_num|inner_top|inner_home|inner_bottom)).*/
+        params:
+          from: "{{colrow}}"
+          to: "{{row_net}}"
+        adjust:
+          shift: [0, 5]
+      # Weird Diodes
+      diode_mcu:
+        what: diode
+        where: /^mirror_matrix_(?:inner_num|inner_top)/
+        params:
+          from: "{{colrow}}"
+          to: "{{row_net}}"
+        adjust:
+          shift: [-5, 0]
+          rotate: 90
+      # More Weird Diodes
+      diode_mcu_under:
+        what: diode
+        where: mirror_matrix_inner_home
+        params:
+          from: "{{colrow}}"
+          to: "{{row_net}}"
+        adjust:
+          shift: [0, 8]
+      diode_mcu_trrs:
+        what: diode
+        where: mirror_matrix_inner_bottom
+        params:
+          from: "{{colrow}}"
+          to: "{{row_net}}"
+        adjust:
+          shift: [-4.5, -7]
+      trrs:
+        what: trrs
+        params:
+          A: GP0 #UART0 TX
+          B: GP1 #UART0 RX
+          C: GND #GND
+          D: 3V3 #3V3 (OUT)
+          reverse: "true"
+          symmetric: "false"
+        where:
+          ref: mirror_matrix_inner_home
+          shift: [-11, -12]
+          rotate: 90
+#      mcu:
+#        what: pipico-no-debug
+#        params:
+#          mounted: "back"
+#          mountingType: "throughole"
+#          pinSilkscreen: false
+#        where:
+#          ref: mirror_matrix_inner_num
+#          shift: [0,-13]
+#          rotate: 0
+#      # Mounting holes
+#      hole_bottom_right:
+#        what: mountinghole
+#        where:
+#          ref: mirror_matrix_inner_bottom
+#          shift: [0.5px, -0.5py]
+#      hole_bottom_left:
+#        what: mountinghole
+#        where:
+#          ref: mirror_matrix_right_thumb
+#          shift: [-0.5px, 0.5py]
+#      hole_top_left:
+#        what: mountinghole
+#        where:
+#          ref: mirror_matrix_right_num
+#          shift: [-0.5px, -0.5py]
+#      hole_top_right:
+#        what: mountinghole
+#        where:
+#          ref: mirror_matrix_index_num
+#          shift: [0.5px, -0.5py]
+#      hole_center:
+#        what: mountinghole
+#        where:
+#          ref: mirror_matrix_ring_home
+#          shift: [-0.5px, -0.5py]
